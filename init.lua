@@ -26,3 +26,4 @@ function TrailingFix()
 
 require "custom.plugins.neoscroll"
 require "custom.plugins.hardmode"
+require "custom.plugins.flutter"
