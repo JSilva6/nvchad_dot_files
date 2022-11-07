@@ -24,7 +24,6 @@ local PluginsConf = {
   ['folke/lsp-colors.nvim'] = {},
   ['folke/trouble.nvim'] = {},
   ['othree/html5.vim'] = {},
-  ['nvim-treesitter/nvim-treesitter-angular'] = {},
   ['wfxr/minimap.vim'] = {},
   ['voldikss/vim-floaterm'] = {},
   ['leafgarland/typescript-vim'] = {},

@@ -12,8 +12,8 @@ local function contains(list, x)
   return false
 end
 
-local servers = { "html", "cssls", "bashls", "emmet_ls", "tsserver", "clangd", "dartls" }
-local navic_exclusion = {"html", "emmet_ls", "cssls"}
+local servers = { "html", "cssls", "bashls", "emmet_ls", "tsserver", "clangd", "dartls", "jedi_language_server"}
+local navic_exclusion = {"html", "emmet_ls", "cssls", "quick_lint_js"}
 
 local on_attach_function
 if not navic_enabled then

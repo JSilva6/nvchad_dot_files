@@ -1,5 +1,23 @@
 local M = {}
 
+local function dump(o, indexer)
+  if not indexer then indexer = 0 end
+  indexer = indexer + 1
+  if type(o) == 'table' then
+    local s = '{ '
+    for k,v in pairs(o) do
+      if type(k) ~= 'number' then k = '"'..k..'"' end
+      if type(v) ~= 'function' then
+        print(type(v), indexer)
+        s = s .. '['..k..'] = ' .. dump(v, indexer) .. ','
+      end
+    end
+    return s .. '} '
+  else
+    return tostring(o)
+  end
+end
+
 M.ui = require "custom.ui"
 M.plugins = require "custom.plugins"
 M.mappings = {
@@ -40,12 +58,12 @@ M.mappings = {
     n = {
       ["gt"] = {
         function()
-          require("core.utils").tabuflineNext()
+          require("nvchad_ui.tabufline").tabuflineNext()
         end, "  goto next buffer", "  goto next buffer"
       },
       ["gT"] = {
         function()
-          require("core.utils").tabuflinePrev()
+          require("nvchad_ui.tabufline").tabuflinePrev()
         end, "  goto prev buffer"
       },
       ["<leader>b"] = { "<cmd> enew <CR>", "烙 new buffer" },
@@ -59,7 +77,17 @@ M.mappings = {
   telescope = {
     n = {
       ["<C-p>"] = { "<cmd> Telescope find_files <CR>", "  find files" },
-      ["<C-f>"] = { "<cmd> Telescope live_grep <CR>", "   live grep" },
+      ["<C-f>"] = { function()
+        -- abre a pesquisa, restaurando ela caso tenha sido a ultima coisa de telescope usada
+        local state = require "telescope.state"
+        local cached_pickers = state.get_global_key "cached_pickers"
+        if(cached_pickers and cached_pickers[1].prompt_title == 'Live Grep') then
+          require('telescope.builtin').resume()
+        else
+          -- precisa ser assim pra usar as customizações do nvchad
+          vim.api.nvim_command('Telescope live_grep')
+        end
+      end, "   live grep" },
       ["<C-o>"] = { "<cmd> Telescope file_browser <CR>", "   open file" },
       ["<leader>node"] = { "<cmd> Telescope node_modules list<CR>", "   list node_module packages" },
     }
