@@ -1,5 +1,8 @@
 local PluginsConf = {
   ['williamboman/nvim-lsp-installer'] = {},
+  -- ['mfussenegger/nvim-dap-python'] = {},
+  -- ['mfussenegger/nvim-dap'] = {},
+  ['puremourning/vimspector'] = {},
   ["neovim/nvim-lspconfig"] = {
     after = "nvim-lsp-installer",
     module = "lspconfig",
