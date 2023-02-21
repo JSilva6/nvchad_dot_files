@@ -1,14 +1,51 @@
 local PluginsConf = {
   ['williamboman/nvim-lsp-installer'] = {},
-  -- ['mfussenegger/nvim-dap-python'] = {},
-  -- ['mfussenegger/nvim-dap'] = {},
-  ['puremourning/vimspector'] = {},
+  ['mfussenegger/nvim-dap'] = {
+    event = "BufReadPre",
+    module = { "dap" },
+    wants = { "nvim-dap-virtual-text", "DAPInstall.nvim", "nvim-dap-ui", "nvim-dap-python" },
+    requires = {
+      "Pocco81/DAPInstall.nvim",
+      "theHamsta/nvim-dap-virtual-text",
+      "rcarriga/nvim-dap-ui",
+      "mfussenegger/nvim-dap-python",
+      "nvim-telescope/telescope-dap.nvim",
+      { "leoluz/nvim-dap-go", module = "dap-go" },
+      { "jbyuki/one-small-step-for-vimkind", module = "osv" },
+    },
+    config = function()
+      require("custom.plugins.dap").setup()
+    end,
+  },
+  ['puremourning/vimspector'] = {
+    -- cmd = { "VimspectorInstall", "VimspectorUpdate" },
+    -- fn = { "vimspector#Launch()", "vimspector#ToggleBreakpoint", "vimspector#Continue" },
+    config = function()
+      require("custom.plugins.vimspector").setup()
+    end,
+  },
+
+  ["nvim-lualine/lualine.nvim"] = {
+    requires = { 'kyazdani42/nvim-web-devicons', opt = true },
+    config = function()
+      require('custom.plugins.lualine').setup()
+    end
+  },
+  ["folke/noice.nvim"] = {
+    config = function()
+      require("custom.plugins.noice").setup()
+    end,
+    requires = {
+      "MunifTanjim/nui.nvim",
+      "rcarriga/nvim-notify",
+    }
+  },
   ["neovim/nvim-lspconfig"] = {
     after = "nvim-lsp-installer",
     module = "lspconfig",
     config = function()
       require "custom.plugins.lsp_installer"
-      require "plugins.configs.lspconfig"
+      require "custom.plugins.configs.lspconfig"
       require "custom.plugins.lspconfig"
     end,
   },
@@ -67,7 +104,17 @@ local PluginsConf = {
     },
   },
   ['NvChad/ui'] = {
+    config = function()
+      local present = pcall(require, "nvchad_ui")
+
+      if present then
+        local config = require "nvchad_ui.config"
+        require "nvchad_ui.tabufline.lazyload"(config.tabufline)
+      end
+    end,
+
     override_options = {
+      statusline = nil,
       tabufline = {
         lazyload = false,
         overriden_modules = function()

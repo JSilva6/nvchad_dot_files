@@ -1,6 +1,6 @@
 local navic_enabled, navic = pcall(require, "nvim-navic")
 local lspconfig = require "lspconfig"
-local config = require "plugins.configs.lspconfig"
+local config = require "custom.plugins.configs.lspconfig"
 
 local attach = config.on_attach
 local capabilities = config.capabilities
