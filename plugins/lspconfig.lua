@@ -12,10 +12,35 @@ local function contains(list, x)
   return false
 end
 
-local servers = { "html", "cssls", "bashls", "emmet_ls", "tsserver", "clangd", "dartls", "jedi_language_server", "stylelint_lsp"}
+local servers = { "html", "cssls", "bashls", "emmet_ls", "tsserver", "clangd", "dartls", "pyright", "stylelint_lsp"}
 local navic_exclusion = {"html", "emmet_ls", "cssls", "quick_lint_js", "stylelint_lsp"}
 
+local settings = {
+  ["pyright"] = {
+    python = {
+      analysis = {
+        diagnosticMode = 'openFilesOnly',
+        diagnosticSeverityOverrides = {
+          reportGeneralTypeIssues = 'information',
+          -- strictParameterNoneValue = false,
+
+          reportOptionalSubscript = "none",
+          reportOptionalMemberAccess = "none",
+          reportOptionalCall = "none",
+          reportOptionalIterable = "none",
+          reportOptionalContextManager = "none",
+          reportOptionalOperand = "none",
+
+          reportIncompatibleVariableOverride = false,
+          reportUnboundVariable = "none",
+        }
+      }
+    }
+  }
+}
+
 local on_attach_function
+
 if not navic_enabled then
   on_attach_function = attach
 else
@@ -29,5 +54,6 @@ for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = (contains(navic_exclusion, lsp) and attach or on_attach_function),
     capabilities = capabilities,
+    settings = (settings[lsp] or {})
   }
 end

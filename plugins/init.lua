@@ -25,18 +25,16 @@ local PluginsConf = {
     end,
   },
 
-  ["nvim-lualine/lualine.nvim"] = {
-    requires = { 'kyazdani42/nvim-web-devicons', opt = true },
-    config = function()
-      require('custom.plugins.lualine').setup()
-    end
-  },
   ["folke/noice.nvim"] = {
     config = function()
       require("custom.plugins.noice").setup()
     end,
     requires = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
       "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
       "rcarriga/nvim-notify",
     }
   },
@@ -87,6 +85,13 @@ local PluginsConf = {
       }
     },
   },
+  ["nvim-tree/nvim-tree.lua"] = {
+    override_options = {
+      filesystem_watchers = {
+        ignore_dirs = {'__pycache__'}
+      }
+    }
+  },
   ["nvim-treesitter/nvim-treesitter"] = {
     override_options = {
       ensure_insalled = {
@@ -104,17 +109,14 @@ local PluginsConf = {
     },
   },
   ['NvChad/ui'] = {
-    config = function()
-      local present = pcall(require, "nvchad_ui")
-
-      if present then
-        local config = require "nvchad_ui.config"
-        require "nvchad_ui.tabufline.lazyload"(config.tabufline)
-      end
-    end,
-
     override_options = {
-      statusline = nil,
+      statusline = {
+        overriden_modules = function()
+          return {
+            LSP_status = nil
+          }
+        end,
+      },
       tabufline = {
         lazyload = false,
         overriden_modules = function()

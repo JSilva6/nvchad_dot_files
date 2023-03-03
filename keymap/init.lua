@@ -6,7 +6,9 @@ local KeyMap = {
       ['<S-Tab>'] = {"<<_", '[Custom] indent backwards'},
 
       ['<Backspace>'] = {'viw"_d', '[Custom] delete whole word'},
-      ['<enter>'] = {'', ''}
+      ['<enter>'] = {'', ''},
+      ['<leader>v'] = {'<cmd> vsplit <CR>', 'split screen vertically'},
+      ['<leader>h'] = {'<cmd> split <CR>', 'split screen horizontally'},
     },
     i = {
       ['<S-Tab>'] = {'<C-D>', '[Custom] indent backwards in insert mode'}
@@ -24,7 +26,7 @@ local KeyMap = {
       ["<TAB>"] = '', -- era padrão de cycle do bufferline
       ["<S-Tab>"] = '', -- era padrão de cycle do bufferline
       ["<S-b>"] = '', -- era new buffer, remapeado
-      ["<leader>v"] = '', -- era abrir um terminal na vertical, por causa dos atalhso do vimspector, tirei
+      -- ["<leader>v"] = '', -- era abrir um terminal na vertical, por causa dos atalhso do vimspector, tirei
       -- ["<leader>e"] = '', -- era focus nvimtree
       ["<return>"] = '', -- era focus nvimtree
 
@@ -33,6 +35,19 @@ local KeyMap = {
       ['<down>'] = '',
       ['<left>'] = '',
       ['<right>'] = '',
+    }
+  },
+  notify = {
+    n = {
+      ['<leader>d'] = {function()
+        local present, notify = pcall(require, "notify")
+
+        if not present then
+          return
+        end
+
+        notify.dismiss()
+      end, "Dismiss all current messages"}
     }
   },
   -- vimspector = {

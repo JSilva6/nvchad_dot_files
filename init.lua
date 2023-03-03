@@ -9,6 +9,8 @@ opt.foldmethod = 'indent'
 vim.api.nvim_command('set smarttab')
 vim.api.nvim_command('set cindent')
 vim.api.nvim_command('set expandtab')
+vim.api.nvim_command('set tabstop=2')
+vim.api.nvim_command('set shiftwidth=2')
 
 local default_providers = {
   "node",
