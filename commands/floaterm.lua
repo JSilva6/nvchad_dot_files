@@ -1,7 +1,7 @@
 local bufgather = vim.fn['floaterm#buflist#gather']
 local bufinfo = vim.fn['getbufinfo']
 local unkillable_name = 'unkillable'
-
+local latest_args = ""
 
 local function toggle_floaterm(name, only_open)
   only_open = only_open or false
@@ -42,7 +42,7 @@ local function toggle_floaterm(name, only_open)
   end
 
   if #open_bufs > 0 and not only_open then
-    for _,bufname in ipairs(open_bufs) do
+    for _, bufname in ipairs(open_bufs) do
       vim.cmd('FloatermHide ' .. bufname)
     end
     return true
@@ -84,14 +84,35 @@ local function toggle_floating_terminal(args)
   toggle_floaterm(name)
 end
 
+local function open_terminal(args)
+  if args.args and args.args ~= "" then
+    latest_args = args.args
+  end
+  open_floating_terminal(args, false)
+end
+
+local function reset_terminal()
+  if latest_args ~= "" then
+    vim.cmd('FloatermKill ' .. unkillable_name)
+    open_floating_terminal({args = latest_args}, false)
+  else
+    print("No previous terminal command found.")
+  end
+end
+
 vim.api.nvim_create_user_command('GitTerminal', function()
   open_floating_terminal("gitui", 0.8, 0.8, 'topright', "git")
 end, { nargs = '*' })
 
 vim.api.nvim_create_user_command('Terminal', function(args)
-  open_floating_terminal(args, false)
+  open_terminal(args)
 end, { nargs = '*' })
 
 vim.api.nvim_create_user_command('TerminalToggle', function(args)
   toggle_floating_terminal(args)
 end, {})
+
+vim.api.nvim_create_user_command('TerminalReset', function()
+  reset_terminal()
+end, {})
+

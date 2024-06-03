@@ -11,6 +11,7 @@ local KeyMap = {
       ['<leader>v'] = {'<cmd> vsplit <CR>', 'split screen vertically'},
       ['<leader>h'] = {'<cmd> split <CR>', 'split screen horizontally'},
       ['<leader>tw'] = {'<cmd> Translate EN<CR>', 'Translate text'},
+      ['<leader>tr'] = {'<cmd> TerminalReset<CR>', 'Reset Terminal'},
       ['gr'] = {'<cmd> Trouble lsp_references<CR>', 'LSP references'},
       ['gd'] = {'<cmd> Trouble lsp_definitions<CR>', 'LSP references'},
       ['gD'] = {'<cmd> Trouble lsp_type_definitions<CR>', 'LSP references'},
