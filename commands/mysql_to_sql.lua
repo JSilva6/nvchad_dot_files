@@ -1,0 +1,10 @@
+-- vim.api.nvim_create_autocmd("BufWinEnter", {
+--     pattern = "/tmp/nvim.juliano/*",
+--     callback = function()
+--         vim.defer_fn(function()
+--             if vim.bo.filetype == "mysql" then
+--                 vim.bo.filetype = "sql"
+--             end
+--         end, 100) -- Delay de 100ms
+--     end
+-- })
