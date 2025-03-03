@@ -1,6 +1,5 @@
 local servers = {
-  "bashls",
-  "tsserver",
+  "ts_ls",
   "clangd",
   "dartls",
   "pyright",
@@ -11,6 +10,8 @@ local servers = {
   'intelephense',
   "gopls",
   "sqlls",
+  "csharp_ls",
+  "svelte"
 
   -- "pylsp",
   -- "lua-language-server",

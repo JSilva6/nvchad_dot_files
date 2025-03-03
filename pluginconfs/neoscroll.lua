@@ -18,13 +18,17 @@ local options = {
 }
 
 local mappings = {
-  ['<S-Up>'] = {'scroll', {'-0.95', 'false', '250'}},
-  ['<S-Down>'] = {'scroll', {'0.95', 'false', '250'}},
-  ['<C-U>'] = {'scroll', {'-0.5', 'false', '100'}},
-  ['<C-D>'] = {'scroll', {'0.5', 'false', '100'}},
-  ['z.'] = {'zz', {'250'}},
-  ['zz'] = {'zz', {'250'}}
+  ['<S-Up>'] = function() neoscroll.scroll(-0.95, {move_cursor=false; duration=250}) end,
+  ['<S-Down>'] = function() neoscroll.scroll(0.95, {move_cursor=false; duration=250}) end,
+  ['<C-U>'] = function() neoscroll.scroll(-0.5, {move_cursor=false; duration=100}) end,
+  ['<C-D>'] = function() neoscroll.scroll(0.5, {move_cursor=false; duration=100}) end,
+  ['z.'] = function() neoscroll.zz({half_win_duration=250}) end,
+  ['zz'] = function() neoscroll.zz({half_win_duration=250}) end
 }
 
 neoscroll.setup(options)
-require('neoscroll.config').set_mappings(mappings)
+
+local modes = { 'n', 'v', 'x' }
+for key, func in pairs(mappings) do
+  vim.keymap.set(modes, key, func)
+end

@@ -21,6 +21,10 @@ local PluginsConf = {
     end,
   },
   {
+    "shime/vim-livedown",
+    lazy = false
+  },
+  {
     "rcarriga/nvim-dap-ui",
     lazy = false,
     dependencies = {
@@ -50,20 +54,24 @@ local PluginsConf = {
     lazy = false
   },
   {
-    'williamboman/nvim-lsp-installer',
-    init = function()
-      require("core.utils").lazy_load "vim-jsx-improve"
-    end,
+    'prisma/vim-prisma',
+    lazy = false
   },
   {
-    'edluffy/hologram.nvim',
-    lazy = false,
-    init = function()
-      require('hologram').setup{
-        auto_display = true -- WIP automatic markdown image display, may be prone to breaking
-      }
-    end
+    'williamboman/nvim-lsp-installer',
+    -- init = function()
+      -- require("core.utils").lazy_load "vim-jsx-improve"
+    -- end,
   },
+  -- {
+  --   'edluffy/hologram.nvim',
+  --   lazy = false,
+  --   init = function()
+  --     require('hologram').setup{
+  --       auto_display = true -- WIP automatic markdown image display, may be prone to breaking
+  --     }
+  --   end
+  -- },
   {
     'rhysd/git-messenger.vim',
     lazy = false,
@@ -111,12 +119,6 @@ local PluginsConf = {
     end, -- Override to setup mason-lspconfig
   },
   {
-    'neoclide/vim-jsx-improve',
-    init = function()
-      require("core.utils").lazy_load "vim-jsx-improve"
-    end,
-  },
-  {
     'ntpeters/vim-better-whitespace',
     init = function()
       require("core.utils").lazy_load "vim-better-whitespace"
@@ -142,6 +144,7 @@ local PluginsConf = {
   {'nvim-telescope/telescope-node-modules.nvim'},
   {
     'folke/trouble.nvim',
+    version = "v2.10.0",
     init = function()
       require("core.utils").lazy_load "trouble.nvim"
     end,
@@ -176,22 +179,16 @@ local PluginsConf = {
     lazy = false
   },
   {
-    'pangloss/vim-javascript',
+    'HerringtonDarkholme/yats.vim',
+    lazy = false
+  },
+  {
+    'sheerun/vim-polyglot',
     lazy = false
   },
   {
     'evanleck/vim-svelte',
     lazy = false
-  },
-  {
-    'leafgarland/typescript-vim',
-    lazy = false
-  },
-  {
-    'wfxr/minimap.vim',
-    init = function()
-      require("core.utils").lazy_load "minimap.vim"
-    end,
   },
   {
     "mhinz/vim-startify",
@@ -231,7 +228,7 @@ local PluginsConf = {
     "nvim-telescope/telescope.nvim",
     opts = {
       defaults = {
-        file_ignore_patterns = { 'node_modules', "%.png", "%.jpg", "%.zip", "%.gif", "%.ico", "%.woff2", "%.ttf", "%.xcf", "%.woff" }
+        file_ignore_patterns = { 'node_modules', "%.png", "%.jpg", "%.zip", "%.gif", "%.ico", "%.woff2", "%.ttf", "%.xcf", "%.woff", 'docs', '%_test.go', '%.lock' }
       },
       extensions_list = {
         "file_browser", "themes", "terms"
@@ -249,12 +246,11 @@ local PluginsConf = {
         ignore_dirs = {'__pycache__'}
       },
       renderer = {
+        highlight_git = true,
         icons = {
-          glyphs = {
-            folder = {
-              default = ""
-            }
-          }
+          show = {
+            git = true,
+          },
         }
       }
     }
