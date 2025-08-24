@@ -106,7 +106,7 @@ return {
 
   {
     "SmiteshP/nvim-navic",
-    event = "LspAttach",
+    lazy=false,
     config = function()
       dofile(vim.g.base46_cache .. "navic")
 
@@ -134,5 +134,9 @@ return {
       { "nvim-telescope/telescope-file-browser.nvim" },
       { "nvim-telescope/telescope-node-modules.nvim" },
     },
+  },
+  {
+    'voldikss/vim-floaterm',
+    lazy = false,
   },
 }

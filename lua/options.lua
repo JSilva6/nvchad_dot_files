@@ -11,6 +11,7 @@ opt.expandtab = true
 opt.foldenable = false
 opt.foldmethod = "indent"
 opt.exrc = true
+opt.winborder='single'
 
 require "wsl.clipboard"
 
