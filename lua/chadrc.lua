@@ -3,7 +3,7 @@ local M = {}
 
 M.base46 = {
   theme = "onedark",
-  -- transparency = true,
+  transparency = true,
   integrations = { "navic" },
 
   hl_override = {
