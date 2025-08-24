@@ -6,3 +6,6 @@ require "custom.commands.disable_providers"
 require "custom.commands.setup"
 
 require "custom.languages.python"
+require "custom.lsp.asm"
+require "custom.wsl.clipboard"
+

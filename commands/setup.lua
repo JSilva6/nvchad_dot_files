@@ -8,3 +8,5 @@ opt.cindent = true
 opt.expandtab = true
 opt.foldenable = false
 opt.foldmethod = 'indent'
+opt.exrc = true
+-- opt.secure = true

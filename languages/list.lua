@@ -11,7 +11,7 @@ local servers = {
   "gopls",
   "sqlls",
   "csharp_ls",
-  "svelte"
+  "svelte",
 
   -- "pylsp",
   -- "lua-language-server",
