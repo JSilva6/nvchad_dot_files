@@ -7,7 +7,7 @@ local servers = {
   "pyright",
   "stylelint_lsp",
   "svelte",
-  "angularls",
+  -- "angularls",
   "golangci_lint_ls",
   "intelephense",
   "gopls",
@@ -26,19 +26,19 @@ local servers = {
 }
 
 -------------------------- angularls --------------------------
-local project_library_path = vim.fn.stdpath("data")
-  .. "/mason/packages/angularls/node_modules/@angular/language-server"
-
-local cmd = {
-  "ngserver",
-  "--stdio",
-  "--tsProbeLocations", project_library_path,
-  "--ngProbeLocations", project_library_path,
-}
-
-vim.lsp.config("angularls", {
-  cmd = cmd,
-})
+-- local project_library_path = vim.fn.stdpath("data")
+--   .. "/mason/packages/angularls/node_modules/@angular/language-server"
+--
+-- local cmd = {
+--   "ngserver",
+--   "--stdio",
+--   "--tsProbeLocations", project_library_path,
+--   "--ngProbeLocations", project_library_path,
+-- }
+--
+-- vim.lsp.config("angularls", {
+--   cmd = cmd,
+-- })
 
 -------------------------- pyright --------------------------
 vim.lsp.config("pyright", {
@@ -99,7 +99,7 @@ vim.lsp.config("golangci_lint_ls", {
     command = {
       vim.fn.expand("$HOME/go/bin/golangci-lint"),
       "run",
-      "--output.json.path=stdout",   -- v2: mande JSON no stdout pro LS
+      "--out-format=json",   -- v2: mande JSON no stdout pro LS
       "--issues-exit-code=1",
       -- "--show-stats=false",       -- opcional; dep. da sua preferência
       -- "--fast-only",              -- opcional: acelera no editor
