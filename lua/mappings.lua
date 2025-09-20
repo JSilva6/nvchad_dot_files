@@ -104,40 +104,9 @@ end)
 local builtin = require("telescope.builtin")
 local state   = require("telescope.state")
 
--- opcional: aumentar cache de pickers
-require("telescope").setup({
-  defaults = { cache_picker = { num_pickers = 50, ignore_empty_prompt = false } },
-})
-
--- memória do último LSP invocado
-local _last_lsp_title = nil
-
--- util: retoma por título ou reabre
-local function _resume_by_title_or_reopen()
-  if not _last_lsp_title then
-    return builtin.live_grep()
-  end
-
-  local cached = state.get_global_key("cached_pickers") or {}
-  for i, pk in ipairs(cached) do
-    if pk and pk.prompt_title == _last_lsp_title then
-      return builtin.resume({ cache_index = i })
-    end
-  end
-
-  -- não achou no cache -> reabrir o builtin correspondente
-  if     _last_lsp_title == "LSP References"        then return builtin.lsp_references()
-  elseif _last_lsp_title == "LSP Definitions"       then return builtin.lsp_definitions()
-  elseif _last_lsp_title == "LSP Type Definitions"  then return builtin.lsp_type_definitions()
-  else
-    return builtin.live_grep()
-  end
-end
-
 map("n", "<C-p>", "<cmd> Telescope find_files <CR>", { desc = "  find files" })
 
 map("n", "<C-f>", function()
-  local state = require "telescope.state"
   local cached_pickers = state.get_global_key "cached_pickers"
   if cached_pickers and cached_pickers[1].prompt_title == "Live Grep" then
     require("telescope.builtin").resume()
@@ -149,24 +118,65 @@ end, { desc = "   live grep" })
 map("n", "<C-o>", "<cmd> Telescope file_browser <CR>", { desc = "   open file" })
 map("n", "<leader>node>", "<cmd> Telescope node_modules list<CR>", { desc = "   list node_module packages" })
 
-map("n", "gr", function()
-  _last_lsp_title = "LSP References"
-  builtin.lsp_references()
-end, { desc = "LSP references" })
+-- opcional: aumentar cache de pickers
+require("telescope").setup({
+  defaults = { cache_picker = { num_pickers = 50, ignore_empty_prompt = false } },
+})
 
-map("n", "gd", function()
-  _last_lsp_title = "LSP Definitions"
-  builtin.lsp_definitions()
-end, { desc = "LSP definitions" })
+-- memória do último LSP invocado
+vim.g._last_lsp_title = vim.g._last_lsp_title or nil
 
-map("n", "gD", function()
-  _last_lsp_title = "LSP Type Definitions"
-  builtin.lsp_type_definitions()
-end, { desc = "LSP type definitions" })
+-- util: retoma por título ou reabre
+local function _resume_by_title_or_reopen()
+  if not vim.g._last_lsp_title then
+    return builtin.live_grep()
+  end
+
+  local cached = state.get_global_key("cached_pickers") or {}
+  for i, pk in ipairs(cached) do
+    if pk and pk.prompt_title == vim.g._last_lsp_title then
+      return builtin.resume({ cache_index = i })
+    end
+  end
+
+  -- não achou no cache -> reabrir o builtin correspondente
+  if     vim.g._last_lsp_title == "LSP References"        then return builtin.lsp_references()
+  elseif vim.g._last_lsp_title == "LSP Definitions"       then return builtin.lsp_definitions()
+  elseif vim.g._last_lsp_title == "LSP Type Definitions"  then return builtin.lsp_type_definitions()
+  else
+    return builtin.live_grep()
+  end
+end
 
 map("n", "<C-t>", function()
   _resume_by_title_or_reopen()
 end, { desc = "retomar último LSP" })
+
+function _G.ApplyLspMappings(bufnr)
+  if vim.b[bufnr]._custom_lsp_keys_applied then return end
+
+  -- apaga mapas do plugin, se existirem
+  pcall(vim.keymap.del, "n", "gd", { buffer = bufnr })
+  pcall(vim.keymap.del, "n", "gD", { buffer = bufnr })
+  pcall(vim.keymap.del, "n", "gr", { buffer = bufnr })
+
+  map("n", "gd", function()
+    vim.g._last_lsp_title = "LSP Definitions"
+    builtin.lsp_definitions()
+  end, { buffer = bufnr, desc = "LSP definitions", silent = true })
+
+  map("n", "gD", function()
+    vim.g._last_lsp_title = "LSP Type Definitions"
+    builtin.lsp_type_definitions()
+  end, { buffer = bufnr, desc = "LSP type definitions", silent = true })
+
+  map("n", "gr", function()
+    vim.g._last_lsp_title = "LSP References"
+    builtin.lsp_references()
+  end, { buffer = bufnr, desc = "LSP references", silent = true })
+
+  vim.b[bufnr]._custom_lsp_keys_applied = true
+end
 
 -- COMMENT ------------------------
 map("n", "<leader>;", "gcc", { desc = "toggle comment", remap = true })

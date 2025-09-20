@@ -110,3 +110,12 @@ vim.lsp.config("golangci_lint_ls", {
 
 -- Por fim, habilite os servidores listados
 vim.lsp.enable(servers)
+
+local aug = vim.api.nvim_create_augroup("my_lsp_key_overrides", { clear = true })
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = aug,
+  callback = function(args)
+    require("configs.lsp_on_attach").apply(args.buf)
+  end,
+})
