@@ -5,7 +5,7 @@ local del = vim.keymap.del
 
 -- GENERAL --------------------------
 -- Normal mode
-map("n", "<C-k>", "<cmd> Trouble toggle <CR>", { desc = "[Custom] toggle LSP errors window" })
+map("n", "<C-k>", "<cmd> Trouble diagnostics toggle<CR>", { desc = "[Custom] toggle LSP errors window" })
 map("n", "<Tab>", ">>_", { desc = "[Custom] indent forward" })
 map("n", "<S-Tab>", "<<_", { desc = "[Custom] indent backwards" })
 
@@ -15,9 +15,9 @@ map("n", "<leader>v", "<cmd> vsplit <CR>", { desc = "split screen vertically" })
 map("n", "<leader>h", "<cmd> split <CR>", { desc = "split screen horizontally" })
 map("n", "<leader>tw", "<cmd> Translate EN<CR>", { desc = "Translate text" })
 map("n", "<leader>tr", "<cmd> TerminalReset<CR>", { desc = "Reset Terminal" })
-map("n", "gr", "<cmd> Trouble lsp_references<CR>", { desc = "LSP references" })
-map("n", "gd", "<cmd> Trouble lsp_definitions<CR>", { desc = "LSP definitions" })
-map("n", "gD", "<cmd> Trouble lsp_type_definitions<CR>", { desc = "LSP type definitions" })
+-- subsitutido pelo telescope
+-- map("n", "gr", "<cmd>Trouble lsp toggle focus=false win.position=bottom<cr>", { desc = "LSP references" })
+
 map(
   "n",
   "<C-g>",
@@ -100,6 +100,40 @@ map(modes, "zz", function()
 end)
 
 -- TELESCOPE -------------------------
+-- deps
+local builtin = require("telescope.builtin")
+local state   = require("telescope.state")
+
+-- opcional: aumentar cache de pickers
+require("telescope").setup({
+  defaults = { cache_picker = { num_pickers = 50, ignore_empty_prompt = false } },
+})
+
+-- memória do último LSP invocado
+local _last_lsp_title = nil
+
+-- util: retoma por título ou reabre
+local function _resume_by_title_or_reopen()
+  if not _last_lsp_title then
+    return builtin.live_grep()
+  end
+
+  local cached = state.get_global_key("cached_pickers") or {}
+  for i, pk in ipairs(cached) do
+    if pk and pk.prompt_title == _last_lsp_title then
+      return builtin.resume({ cache_index = i })
+    end
+  end
+
+  -- não achou no cache -> reabrir o builtin correspondente
+  if     _last_lsp_title == "LSP References"        then return builtin.lsp_references()
+  elseif _last_lsp_title == "LSP Definitions"       then return builtin.lsp_definitions()
+  elseif _last_lsp_title == "LSP Type Definitions"  then return builtin.lsp_type_definitions()
+  else
+    return builtin.live_grep()
+  end
+end
+
 map("n", "<C-p>", "<cmd> Telescope find_files <CR>", { desc = "  find files" })
 
 map("n", "<C-f>", function()
@@ -115,3 +149,25 @@ end, { desc = "   live grep" })
 map("n", "<C-o>", "<cmd> Telescope file_browser <CR>", { desc = "   open file" })
 map("n", "<leader>node>", "<cmd> Telescope node_modules list<CR>", { desc = "   list node_module packages" })
 
+map("n", "gr", function()
+  _last_lsp_title = "LSP References"
+  builtin.lsp_references()
+end, { desc = "LSP references" })
+
+map("n", "gd", function()
+  _last_lsp_title = "LSP Definitions"
+  builtin.lsp_definitions()
+end, { desc = "LSP definitions" })
+
+map("n", "gD", function()
+  _last_lsp_title = "LSP Type Definitions"
+  builtin.lsp_type_definitions()
+end, { desc = "LSP type definitions" })
+
+map("n", "<C-t>", function()
+  _resume_by_title_or_reopen()
+end, { desc = "retomar último LSP" })
+
+-- COMMENT ------------------------
+map("n", "<leader>;", "gcc", { desc = "toggle comment", remap = true })
+map("v", "<leader>;", "gc", { desc = "toggle comment", remap = true })
