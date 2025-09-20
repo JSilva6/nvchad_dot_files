@@ -68,6 +68,19 @@ local function open_floating_terminal(args, width, height, position, name)
     position = 'topright'
   end
 
+  -- For future nvchad ui term
+  -- if string.find(position, "top") then coords['row'] = 0 end
+  -- if string.find(position, "bottom") then coords['row'] = 1 end
+  -- if string.find(position, "left") then coords['col'] = 0 end
+  -- if string.find(position, "right") then coords['col'] = 1 end
+  --
+  -- term.toggle {
+  --   pos = "float",
+  --   id = name,
+  --   cmd = args,
+  --   float_opts = coords,
+  -- }
+
   if name ~= unkillable_name and toggle_floaterm(name, true) then return end
 
   local command = 'FloatermNew --name=' .. name .. ' --position=' .. position .. ' --width=' .. width .. ' --height=' .. height .. ' --autoclose=0'
