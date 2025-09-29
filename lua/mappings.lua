@@ -3,6 +3,63 @@ require "nvchad.mappings"
 local map = vim.keymap.set
 local del = vim.keymap.del
 
+local function resolve_copy_path()
+  local function is_valid(path)
+    return path ~= "" and not path:match "^term://"
+  end
+
+  local function to_relative(path)
+    local relative = vim.fn.fnamemodify(path, ":.")
+    relative = vim.fn.simplify(relative)
+
+    if relative:sub(1, 2) == "./" then
+      relative = relative:sub(3)
+    end
+
+    return relative ~= "" and relative or path
+  end
+
+  local current_buf = vim.api.nvim_get_current_buf()
+  local current_name = vim.api.nvim_buf_get_name(current_buf)
+  local current_type = vim.bo[current_buf].buftype
+
+  if current_type ~= "terminal" and is_valid(current_name) then
+    return to_relative(current_name)
+  end
+
+  local alt_buf = vim.fn.bufnr "#"
+  if alt_buf > 0 then
+    local alt_name = vim.api.nvim_buf_get_name(alt_buf)
+    if vim.bo[alt_buf].buftype ~= "terminal" and is_valid(alt_name) then
+      return to_relative(alt_name)
+    end
+  end
+
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, "buflisted") then
+      local buf_type = vim.bo[buf].buftype
+      local buf_name = vim.api.nvim_buf_get_name(buf)
+      if buf_type ~= "terminal" and is_valid(buf_name) then
+        return to_relative(buf_name)
+      end
+    end
+  end
+
+  return ""
+end
+
+local function copy_path_to_clipboard()
+  local path = resolve_copy_path()
+
+  if path == "" then
+    vim.api.nvim_echo({ { "no file path to copy", "WarningMsg" } }, false, {})
+    return
+  end
+
+  vim.fn.setreg("+", path)
+  vim.api.nvim_echo({ { "copied " .. path .. " to the clipboard.", "Normal" } }, false, {})
+end
+
 -- GENERAL --------------------------
 -- Normal mode
 map("n", "<C-k>", "<cmd> Trouble diagnostics toggle<CR>", { desc = "[Custom] toggle LSP errors window" })
@@ -18,12 +75,18 @@ map("n", "<leader>tr", "<cmd> TerminalReset<CR>", { desc = "Reset Terminal" })
 -- subsitutido pelo telescope
 -- map("n", "gr", "<cmd>Trouble lsp toggle focus=false win.position=bottom<cr>", { desc = "LSP references" })
 
-map(
-  "n",
-  "<C-g>",
-  "<cmd> let @+ = expand('%') | echo 'copied ' . @+ . ' to the clipboard.'<CR>",
-  { desc = "Copy path to clipboard" }
-)
+map("n", "<C-g>", copy_path_to_clipboard, { desc = "Copy path to clipboard" })
+map("t", "<C-g>", function()
+  local escape = vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true)
+  local enter_insert = vim.api.nvim_replace_termcodes("i", true, false, true)
+
+  vim.api.nvim_feedkeys(escape, "n", false)
+
+  vim.schedule(function()
+    copy_path_to_clipboard()
+    vim.api.nvim_feedkeys(enter_insert, "n", false)
+  end)
+end, { desc = "Copy path to clipboard" })
 map("n", "<leader>s", "<cmd> vertical resize 45<CR>", { desc = "Fix side panel" })
 map("n", "<leader>dt", "<cmd> lua require('dapui').toggle()<CR>", { desc = "Toggle DAP UI" })
 map("n", "<leader>db", "<cmd> DapToggleBreakpoint<CR>", { desc = "Toggle DAP Breakpoint" })
