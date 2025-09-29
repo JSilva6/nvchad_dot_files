@@ -58,14 +58,21 @@ end
 
 local function open_floating_terminal(args, width, height, position, name)
   local cmd = args.args or args or ""
+  local explicit_name = name ~= nil
+  local explicit_position = position ~= nil
+
   width = width or 0.5
   height = height or 0.35
   position = position or 'bottomright'
   name = name or "default"
 
   if cmd ~= "" then
-    name = unkillable_name
-    position = 'topright'
+    if (not explicit_name) or name == "default" then
+      name = unkillable_name
+    end
+    if not explicit_position then
+      position = 'topright'
+    end
   end
 
   -- For future nvchad ui term
@@ -92,7 +99,21 @@ local function open_floating_terminal(args, width, height, position, name)
 end
 
 local function toggle_floating_terminal(args)
-  local name = args[1] or "default"
+  local name
+
+  if type(args) == "table" then
+    if args.fargs and args.fargs[1] then
+      name = args.fargs[1]
+    elseif args.args and args.args ~= "" then
+      name = args.args
+    elseif args[1] then
+      name = args[1]
+    end
+  elseif type(args) == "string" and args ~= "" then
+    name = args
+  end
+
+  name = name or vim.b.floaterm_name or "default"
 
   toggle_floaterm(name)
 end
@@ -123,9 +144,18 @@ end, { nargs = '*' })
 
 vim.api.nvim_create_user_command('TerminalToggle', function(args)
   toggle_floating_terminal(args)
-end, {})
+end, { nargs = '?' })
 
 vim.api.nvim_create_user_command('TerminalReset', function()
   reset_terminal()
 end, {})
 
+vim.api.nvim_create_user_command('Codex', function(args)
+  local cmd = 'codex'
+
+  if args.args ~= '' then
+    cmd = cmd .. ' --session ' .. vim.fn.shellescape(args.args)
+  end
+
+  open_floating_terminal(cmd, 0.8, 0.8, 'center', 'codex')
+end, { nargs = '?' })
