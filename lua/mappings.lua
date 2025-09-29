@@ -21,7 +21,7 @@ map("n", "<leader>tr", "<cmd> TerminalReset<CR>", { desc = "Reset Terminal" })
 map(
   "n",
   "<C-g>",
-  "<cmd> let @+ = expand('%:p') . ':' . line('.') | echo 'copied ' . @+ . ' to the clipboard.'<CR>",
+  "<cmd> let @+ = expand('%') | echo 'copied ' . @+ . ' to the clipboard.'<CR>",
   { desc = "Copy path to clipboard" }
 )
 map("n", "<leader>s", "<cmd> vertical resize 45<CR>", { desc = "Fix side panel" })
@@ -30,17 +30,36 @@ map("n", "<leader>db", "<cmd> DapToggleBreakpoint<CR>", { desc = "Toggle DAP Bre
 map("n", "<leader>dc", "<cmd> DapContinue<CR>", { desc = "Continue Debugging" })
 map("n", "<leader>dr", "<cmd> lua require('dapui').open({reset = true})<CR>", { desc = "Reset DAP UI" })
 
+map("n", "<up>", "gk", { desc = "Move Up in multiline" })
+map("n", "<down>", "gj", { desc = "Move Down in multiline" })
+
 -- Insert mode
 map("i", "<S-Tab>", "<C-D>", { desc = "[Custom] indent backwards in insert mode" })
 
 -- Terminal mode
-map("t", "<C-x>", "<cmd> TerminalToggle<CR>", { desc = "Toggle terminal while in it" })
+map("t", "<C-x>", function()
+  local escape = vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, true, true)
+  local term_name = vim.b.floaterm_name
+
+  vim.api.nvim_feedkeys(escape, "n", false)
+
+  vim.schedule(function()
+    if term_name and term_name ~= "" then
+      vim.api.nvim_cmd({ cmd = "TerminalToggle", args = { term_name } }, {})
+    else
+      vim.cmd "TerminalToggle"
+    end
+  end)
+end, { desc = "Toggle terminal while in it" })
 
 -- Visual mode
 map("v", "<Tab>", ">gv", { desc = "[Custom] indent forward in select mode" })
 map("v", "<S-Tab>", "<gv", { desc = "[Custom] indent backwards in select mode" })
 map("v", "<Backspace>", '"_d', { desc = "[Custom] delete selected text without yanking" })
 map("v", "<leader>tw", "<cmd> Translate EN<CR>", { desc = "Translate text" })
+
+map("v", "<up>", "gk", { desc = "Move Up in multiline" })
+map("v", "<down>", "gj", { desc = "Move Down in multiline" })
 
 -- DISABLED (removed NvChad defaults)
 del("n", "<C-s>") -- save file
@@ -161,12 +180,10 @@ function _G.ApplyLspMappings(bufnr)
   pcall(vim.keymap.del, "n", "gr", { buffer = bufnr })
 
   map("n", "gd", function()
-    vim.g._last_lsp_title = "LSP Definitions"
     builtin.lsp_definitions()
   end, { buffer = bufnr, desc = "LSP definitions", silent = true })
 
   map("n", "gD", function()
-    vim.g._last_lsp_title = "LSP Type Definitions"
     builtin.lsp_type_definitions()
   end, { buffer = bufnr, desc = "LSP type definitions", silent = true })
 
