@@ -11,7 +11,6 @@ local servers = {
   "golangci_lint_ls",
   "intelephense",
   "gopls",
-  "sqlls",
   "csharp_ls",
   "svelte",
   -- "pylsp",
