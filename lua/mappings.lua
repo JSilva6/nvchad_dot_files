@@ -243,16 +243,16 @@ function _G.ApplyLspMappings(bufnr)
   pcall(vim.keymap.del, "n", "gr", { buffer = bufnr })
 
   map("n", "gd", function()
-    builtin.lsp_definitions()
+    vim.cmd "Telescope lsp_definitions"
   end, { buffer = bufnr, desc = "LSP definitions", silent = true })
 
   map("n", "gD", function()
-    builtin.lsp_type_definitions()
+    vim.cmd "Telescope lsp_type_definitions"
   end, { buffer = bufnr, desc = "LSP type definitions", silent = true })
 
   map("n", "gr", function()
     vim.g._last_lsp_title = "LSP References"
-    builtin.lsp_references()
+    vim.cmd "Telescope lsp_references"
   end, { buffer = bufnr, desc = "LSP references", silent = true })
 
   vim.b[bufnr]._custom_lsp_keys_applied = true

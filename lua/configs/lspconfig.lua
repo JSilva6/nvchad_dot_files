@@ -8,9 +8,9 @@ local servers = {
   "stylelint_lsp",
   "svelte",
   -- "angularls",
+  "gopls",
   "golangci_lint_ls",
   "intelephense",
-  "gopls",
   "csharp_ls",
   "svelte",
   -- "pylsp",
@@ -89,23 +89,17 @@ vim.lsp.config("gopls", {
 --     | sh -s -- -b "$(go env GOPATH)"/bin v2.4.0
 --
 -- E (opcional) instale o langserver por release:
---   pegue o binário 'golangci-lint-langserver' e deixe no PATH (ex.: ~/.local/bin)
---
--- Importante: no v2 a flag de JSON mudou para --output.json.path=stdout
+--------------------- golangci_lint_ls (v1 flags) ---------------------
+local GOPATH = vim.fn.expand("$GOPATH")
+local GOROOT = vim.fn.expand("$GOROOT")
 vim.lsp.config("golangci_lint_ls", {
-  cmd = { "golangci-lint-langserver" },  -- binário do LS (ex.: de release)
+  cmd = { GOPATH .. "/bin/gci-ls.sh" },  -- use shim, not the ELF directly
   init_options = {
-    command = {
-      vim.fn.expand("$HOME/go/bin/golangci-lint"),
-      "run",
-      "--out-format=json",   -- v2: mande JSON no stdout pro LS
-      "--issues-exit-code=1",
-      -- "--show-stats=false",       -- opcional; dep. da sua preferência
-      -- "--fast-only",              -- opcional: acelera no editor
-      -- NÃO habilite/disable linters aqui; prefira o .golangci.yml do projeto
-    },
+    command = { GOPATH .. "/bin/golangci-lint", "run", "--out-format", "json", "--issues-exit-code=1" },
   },
+  env = { PATH = GOROOT.."/bin:"..GOPATH.."/bin:"..vim.fn.getenv("PATH") },
 })
+vim.lsp.enable({ "gopls", "golangci_lint_ls" })
 
 -- Por fim, habilite os servidores listados
 vim.lsp.enable(servers)
